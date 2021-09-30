@@ -3,7 +3,7 @@ using namespace std;
  #define COUNT 10
 
 
-// An AVL tree root
+
 class gatorInfo
 {
     public:
@@ -14,12 +14,7 @@ class gatorInfo
     int height;
 };
  
-// A utility function to get maximum
-// of two integers
-int max(int a, int b);
- 
-// A utility function to get the
-// height of the tree
+
 int height(gatorInfo *N)
 {
     if (N == NULL)
@@ -27,16 +22,13 @@ int height(gatorInfo *N)
     return N->height;
 }
  
-// A utility function to get maximum
-// of two integers
+
 int max(int a, int b)
 {
     return (a > b)? a : b;
 }
  
-/* Helper function that allocates a
-   new root with the given gatorID and
-   NULL left and right pointers. */
+
 gatorInfo* newGatorInfo(string gatorName,int gatorID)
 {
     gatorInfo* root = new gatorInfo();
@@ -44,56 +36,74 @@ gatorInfo* newGatorInfo(string gatorName,int gatorID)
     root->left = NULL;
     root->right = NULL;
 		root->gatorName = gatorName;
-    root->height = 1; // new root is initially
-                      // added at leaf
+    root->height = 1; 
     return(root);
 }
  
-// A utility function to right
-// rotate subtree rooted with y
-// See the diagram given above.
-gatorInfo *rightRotate(gatorInfo *y)
+
+gatorInfo *rightRotate(gatorInfo *root)
 {
-    gatorInfo *x = y->left;
-    gatorInfo *T2 = x->right;
- 
-    // Perform rotation
-    x->right = y;
-    y->left = T2;
- 
-    // Update heights
-    y->height = max(height(y->left),
-                    height(y->right)) + 1;
-    x->height = max(height(x->left),
-                    height(x->right)) + 1;
- 
-    // Return new root
-    return x;
+    gatorInfo *newParent = root->left;
+    gatorInfo *garndChild = newParent->right;
+				/*
+			Pre rotation-->
+			root->val = 3, newParent->val = 2, grandChild = NULL
+								root->	3
+										/
+			newParent	->	2	
+									/		\					
+								1			NULL	<- grandChild			
+		*/
+    newParent->right = root;
+    root->left = garndChild;
+		/*
+				Post rotation
+				newParent->val = 2, newParent->right->val = 3
+							newParent->	2
+												/		\
+											1				3 <-root
+														/
+													NULL <-grandChild
+			*/
+    root->height = max(height(root->left),height(root->right)) + 1;
+    newParent->height = max(height(newParent->left),height(newParent->right)) + 1;
+
+    return newParent;
 }
  
-// A utility function to left
-// rotate subtree rooted with x
-// See the diagram given above.
-gatorInfo *leftRotate(gatorInfo *x)
+
+gatorInfo *leftRotate(gatorInfo *root)
 {
-    gatorInfo *y = x->right;
-    gatorInfo *T2 = y->left;
+    gatorInfo *newParent = root->right;
+    gatorInfo *garndChild = newParent->left;
+		/*
+			Pre rotation
+							root->	1
+												\
+							newParent->	2			
+												/		\					
+			grandChild->		NULL	   3				
+		*/
+  
+    newParent->left = root;
+    root->right = garndChild;
  
-    // Perform rotation
-    y->left = x;
-    x->right = T2;
+    
+    root->height = max(height(root->left), height(root->right)) + 1;
+    newParent->height = max(height(newParent->left),height(newParent->right)) + 1;
  
-    // Update heights
-    x->height = max(height(x->left),   
-                    height(x->right)) + 1;
-    y->height = max(height(y->left),
-                    height(y->right)) + 1;
- 
-    // Return new root
-    return y;
+    	/*
+		Post rotation
+		newParent->		2
+								/		\
+			root->	1				3
+								\
+								NULL <- grandChild
+		*/
+    return newParent;
 }
  
-// Get Balance factor of root N
+
 int getBalance(gatorInfo *N)
 {
     if (N == NULL)
@@ -103,14 +113,52 @@ int getBalance(gatorInfo *N)
 
 gatorInfo* balanceTree(gatorInfo* root,int gatorID,int balance){
 	// Left Left Case
+		/*
+		-->Left Left case
+		--> fix: Rotate right
+				-->root->left->val = 2
+						3 <-balance =2
+					/
+				2	<-balance =1			-->				2 <- balance = 1- 1 = 0
+			/															/		\
+		1															1				3
+		*/
 	if (balance > 1 && gatorID < root->left->gatorID)
         return rightRotate(root);
  
     // Right Right Case
+		/*
+		--> Right Right case
+		--> fix: Rotate 1 to left
+		1 <- balance = -2
+			\
+				2	<- balance = -1			-->			2 <- balance = 1 - 1 = 0
+					\													/		\
+						3											1				3
+		*/
     if (balance < -1 && gatorID > root->right->gatorID)
         return leftRotate(root);
  
     // Left Right Case
+			/*
+		-->Left Right case
+		--> fix: 1.Rotate left
+				-->root->val = 1, root->left->val = 2 
+		
+			3	<- balance = 2								3 <- balance = 2
+		/																/
+		1	<- balance = -1		--> 			2 <- balance = 1
+		\														/
+			2												1
+		-->2. rotate righ
+			-->root->val = 2
+						3 <- balance = 2
+					/
+				2	<- balance = 1		-->			2 <- balance = 1 - 1 = 0
+			/														/		\
+		1														1				3
+		
+		*/
     if (balance > 1 && gatorID > root->left->gatorID)
     {
         root->left = leftRotate(root->left);
@@ -118,6 +166,24 @@ gatorInfo* balanceTree(gatorInfo* root,int gatorID,int balance){
     }
  
     // Right Left Case
+			/*
+		-->Right Left case
+			--> fix: 1. Rotae right
+			-->root->right->val = 3
+		
+			1	<- balance = -2								1 <- balance = -2
+				\																\
+					3 <- balance = 1		--> 				2	<- balance = -1
+				/																		\				
+			2																				3
+			-->2. Rotate left	
+			-->root->val = 2, root->right->val = 3
+			1	<-balance = -2
+				\
+					2		<- balance = -1			--> 				2 <- balance = 1 - 1 = 0
+						\																/		\
+							3														1				3
+		*/
     if (balance < -1 && gatorID < root->right->gatorID)
     {
         root->right = rightRotate(root->right);
@@ -126,68 +192,85 @@ gatorInfo* balanceTree(gatorInfo* root,int gatorID,int balance){
  return root;
 }
  
-// Recursive function to insert a gatorID
-// in the subtree rooted with root and
-// returns the new root of the subtree.
-gatorInfo* insert(gatorInfo* root, string gatorName,int gatorID)
+
+gatorInfo* insertGatorInfo(gatorInfo* root, string gatorName,int gatorID)
 {
-    /* 1. Perform the normal BST insertion */
-    if (root == NULL)
+    
+    if (root == NULL){
         return(newGatorInfo(gatorName,gatorID));
- 
-    if (gatorID < root->gatorID)
-        root->left = insert(root->left,gatorName, gatorID);
-    else if (gatorID > root->gatorID)
-        root->right = insert(root->right,gatorName, gatorID);
-    else // Equal gatorIDs are not allowed in BST
+		}
+		if(gatorID == root->gatorID){ 
+			// Equal gatorIDs are not allowed in BST
         return root;
- 
-    /* 2. Update height of this ancestor root */
-    root->height = 1 + max(height(root->left),
-                        height(root->right));
- 
-    /* 3. Get the balance factor of this ancestor
-        root to check whether this root became
-        unbalanced */
+		}
+				/*
+		insert 1
+
+							10
+						/			\
+					9					11
+				/		\
+			3			8
+
+
+
+		*/
+		
+    if (gatorID < root->gatorID){
+        root->left = insertGatorInfo(root->left,gatorName, gatorID);
+		}
+				/*
+		insert 12
+
+							10
+						/			\
+					9					11
+				/		\
+			1			8
+
+
+
+		*/
+    if (gatorID > root->gatorID){
+        root->right = insertGatorInfo(root->right,gatorName, gatorID);
+		}
+		
+    root->height = 1 + max(height(root->left),height(root->right));
+
     int balance = getBalance(root);
  
-    // If this root becomes unbalanced, then
-    // there are 4 cases
- 
-    
     root = balanceTree(root,gatorID,balance);
-    /* return the (unchanged) root pointer */
+   
     return root;
 }
 
 
 void print2DUtil(gatorInfo *root, int space)
 {
-    // Base case
+   
     if (root == NULL)
         return;
  
-    // Increase distance between levels
+ 
     space += COUNT;
  
-    // Process right child first
+ 
     print2DUtil(root->right, space);
  
-    // Print current root after space
-    // count
+ 
     cout<<endl;
     for (int i = COUNT; i < space; i++)
         cout<<" ";
     cout<<root->gatorName<<"\n";
  
-    // Process left child
+   
     print2DUtil(root->left, space);
 }
  
-// Wrapper over print2DUtil()
+
 void print2D(gatorInfo *root)
 {
-    // Pass initial space count as 0
+   
     print2DUtil(root, 0);
 }
 
@@ -212,62 +295,58 @@ gatorInfo* minValueNode(gatorInfo* node)
 {
     gatorInfo* current = node;
  
-    /* loop down to find the leftmost leaf */
     while (current && current->left != NULL)
         current = current->left;
  
     return current;
 }
- 
-/* Given a binary search tree and a key, this function
-deletes the key and returns the new root */
-gatorInfo* deleteGatorID(gatorInfo* root, int key)
+
+
+gatorInfo* deleteGatorID(gatorInfo* root, int gatorID)
 {
-    // base case
     if (root == NULL)
         return root;
  
-    // If the key to be deleted is
-    // smaller than the root's
-    // key, then it lies in left subtree
-    if (key < root->gatorID)
-        root->left = deleteGatorID(root->left, key);
+   
+    if (gatorID < root->gatorID){
+        root->left = deleteGatorID(root->left, gatorID);
+		}
  
-    // If the key to be deleted is
-    // greater than the root's
-    // key, then it lies in right subtree
-    else if (key > root->gatorID)
-        root->right = deleteGatorID(root->right, key);
  
-    // if key is same as root's key, then This is the node
-    // to be deleted
+     if (gatorID > root->gatorID){
+        root->right = deleteGatorID(root->right, gatorID);
+		 }
+ 
+  
     else {
         // node has no child
-        if (root->left==NULL and root->right==NULL)
+        if (root->left==NULL and root->right==NULL){
             return NULL;
+				}
        
         // node with only one child or no child
-        else if (root->left == NULL) {
+         if (root->left == NULL) {
             gatorInfo* temp = root->right;
             free(root);
             return temp;
         }
-        else if (root->right == NULL) {
+         if (root->right == NULL) {
             gatorInfo* temp = root->left;
             free(root);
             return temp;
         }
  
-        // node with two children: Get the inorder successor
-        // (smallest in the right subtree)
+      
         gatorInfo* temp = minValueNode(root->right);
  
-        // Copy the inorder successor's content to this node
         root = temp;
  
-        // Delete the inorder successor
+    
         root->right = deleteGatorID(root->right, temp->gatorID);
     }
+		int treeBalance = getBalance(root);
+		root->height = 1 + max(height(root->left),height(root->right));
+		balanceTree( root, gatorID, treeBalance);
     return root;
 }
 
@@ -336,78 +415,90 @@ void printPostorder(gatorInfo* root){
 
 int findLevel(gatorInfo* root)
 {
-    if (root->left == NULL && root->right == NULL)
+    if (root->left == NULL && root->right == NULL){
         return 1;
+		}
  
     int left = 0;
-    if (root->left != NULL)
+    if (root->left != NULL){
         left = findLevel(root->left);
+		}
  
     int right = 0;
-    if (root->right != NULL)
+    if (root->right != NULL){
         right = findLevel(root->right);
+		}
  
     return (max(left, right) + 1);
 }
-void removeNthInorder(gatorInfo* root, int target){
-    static int count = 0;
-    if (root == NULL)
-        return;
 
-    if (count <= target) {
-        /* first recur on left child */
-        removeNthInorder(root->right, target);
-		
+
+
+void removeNthInorder(gatorInfo* root,int n){
+     static int count = 0;
+    if (root == NULL){
+        return ;
+		}
+ 
+    if (count <= n) {
+ 
+        
+        removeNthInorder(root->left, n);
         count++;
-        // when count = n then print element
-        if (count == target){
-            deleteGatorID(root, root->gatorID);
-						return; 
+ 
+       
+        if (count == n){
+           root = deleteGatorID( root, root->gatorID);
+					 return ;
 				}
-        /* now recur on right child */
-        removeNthInorder(root->right, target);
+ 
+        
+        removeNthInorder(root->right, n);
     }
-
 }
-/*
 
-all the function call prototypes 
+bool isNumber(const string& str)
+{
+    for (char const &c : str) {
+        if (std::isdigit(c) == 0) return false;
+    }
+    return true;
+}
 
 
 
-*/
-// Driver Code
+
 int main()
 {
-    gatorInfo *root = NULL;
+    // gatorInfo *root = NULL;
      
-    /* Constructing tree given in
-    the above figure */
-    root = insert(root, "Evan", 44985771);
-    root = insert(root,"Earl", 31834874);
-    root = insert(root,"Erica", 21456789);
-		// root = insert(root,"Carla", 56567342);
-		// root = insert(root,"Cody", 83711221);
-		root = insert(root,"Erica", 17449900);
+    // /* Constructing tree given in
+    // the above figure */
+    // root = insertGatorInfo(root, "Evan", 44985771);
+    // root = insertGatorInfo(root,"Earl", 31834874);
+    // root = insertGatorInfo(root,"Erica", 21456789);
+		// // root = insert(root,"Carla", 56567342);
+		// // root = insert(root,"Cody", 83711221);
+		// root = insertGatorInfo(root,"Erica", 17449900);
     
-    print2D(root);
+    // print2D(root);
 
-		int val  = 0;
-		val = searchGatorName(root, "Erica");
+		// int val  = 0;
+		// val = searchGatorName(root, "Erica");
 
-		if(val == 0){
-			cout<<"unsucseful\n";
-		}
+		// if(val == 0){
+		// 	cout<<"unsucseful\n";
+		// }
 
 		
 
-		print2D(root);
+		// print2D(root);
 
-		searchGatorID(root,21456789,NULL);
+		// searchGatorID(root,21456789,NULL);
 
-		int level = findLevel(root);
+		// int level = findLevel(root);
 
-		cout<<level<<"\n";
+		// cout<<level<<"\n";
 		
     /* The constructed AVL Tree would be
                 30
@@ -417,6 +508,98 @@ int main()
         10 25 50
     */
     
-     
+    //   removeNthInorder(root,2);
+		//  print2D(root);
+
+		gatorInfo* root = NULL;
+
+		int iter = 0;
+
+		cin>> iter;
+
+
+		for(int i = 0; i< iter;i++){
+
+			string comand;
+
+			cin>>comand;
+	
+
+			if(comand == "insert"){
+				int gatorID =0;
+				string gatorName;
+
+				cin>>gatorName;
+
+				cin>>gatorID;
+				gatorName.erase(remove(gatorName.begin(),gatorName.end(),'\"'),gatorName.end());
+
+			
+
+				root = insertGatorInfo(root, gatorName, gatorID);
+			}
+			if(comand == "remove"){
+				int gatorID;
+				cin>>gatorID;
+				root = deleteGatorID(root, gatorID);
+			}
+
+			if(comand == "search"){
+				string searchThis;
+				cin>>searchThis;
+
+				searchThis.erase(remove(searchThis.begin(),searchThis.end(),'\"'),searchThis.end());
+
+				if(isNumber(searchThis)){
+
+				
+    			stringstream convertToInt(searchThis);
+ 
+    			
+    			int x = 0;
+    			convertToInt >> x;
+					searchGatorID(root, x, NULL);
+				}
+
+				if(!isNumber(searchThis)){
+					int val =0;
+					
+					val = searchGatorName(root,searchThis);
+
+					if(val == 0){
+						cout<<"unsuccessful\n";
+					}
+					
+				}
+
+			}
+
+			if(comand == "printLevelCount"){
+			int level =	findLevel(root);
+
+			cout<<level<<"\n";
+			}
+
+			if(comand == "removeInorder"){
+				int num =0 ;
+				cin>>num;
+				removeNthInorder(root,num);
+			}
+			if(comand == "printInorder"){
+				printInorder(root);
+				cout<<"\n";
+			}
+			if(comand == "printPreorder"){
+				printPreorder(root);
+				cout<<"\n";
+			}
+			if(comand == "printPostorder"){
+				printPostorder(root);
+				cout<<"\n";
+			}
+			if(comand == "print2D"){
+				print2D(root);
+			}
+	}
     return 0;
 }
