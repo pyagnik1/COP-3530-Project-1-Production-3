@@ -396,27 +396,49 @@ void searchGatorID(gatorInfo* root, int gatorID, gatorInfo* parent){
 
 
 void printInorder(gatorInfo* root){
-	if(root != NULL && root->gatorID != 0){
-		printInorder(root->left);
-		cout<<root->gatorName << " , ";
-		printInorder(root->right);
+	
+	if(root != NULL){
+		if(root->left){
+			printInorder(root->left);
+			cout<<" ";
+		}
+
+		cout<<" ,"<<root->gatorName;
+
+		if(root->right){
+			printInorder(root->right);
+			cout<<" ";
+		}
 	}
+
+	
 }
 
 void printPreorder(gatorInfo* root){
-	if(root != NULL && root->gatorID != 0){
-		cout<<root->gatorName << " , ";
-		printPreorder(root->left);
-		printPreorder(root->right);
-	}
+	if (root != NULL) {
+        cout << root->gatorName;
+        if(root->left != NULL || root->right != NULL){ 
+				cout << ", ";
+				}
+        printPreorder(root->left);
+        if(root->left && root->right){ 
+				cout << ",";
+				}
+        printPreorder(root->right);
+    }
 }
 
-void printPostorder(gatorInfo* root){
-	if(root != NULL && root->gatorID != 0){
-		printPostorder(root->left);
-		printPostorder(root->right);
-		cout<<root->gatorName << " , ";
-	}
+bool printPostorder(gatorInfo* root){
+
+    if (!root) {
+        return false;
+    }
+    if (printPostorder(root->left))
+        cout << ", ";
+    if (printPostorder(root->right))
+        cout << ", ";
+    (cout << root->gatorName);
+	return true;
 }
 
 
@@ -650,7 +672,8 @@ int main()
 				cout<<"\n";
 			}
 			if(comand == "printPostorder"){
-				printPostorder(root);
+				bool res;
+				res = printPostorder(root);
 				cout<<"\n";
 			}
 			if(comand == "print2D"){
