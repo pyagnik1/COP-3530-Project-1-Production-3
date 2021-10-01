@@ -199,12 +199,12 @@ gatorInfo* insertGatorInfo(gatorInfo* root, string gatorName,int gatorID)
 {
     
     if (root == NULL){
-			cout<<"successful\n";
+			cout<<"successful😊\n";
         return(newGatorInfo(gatorName,gatorID));
 		}
 		if(gatorID == root->gatorID){ 
 			// Equal gatorIDs are not allowed in BST
-			cout<<"successful\n";
+			cout<<"successful😊\n";
         return root;
 		}
 				/*
@@ -353,14 +353,14 @@ gatorInfo* deleteGatorID(gatorInfo* root, int gatorID)
         // Delete the inorder successor
         root->right = deleteGatorID(root->right, temp->gatorID);
     }
-		cout<<"successful\n";
+		cout<<"successful😊\n";
     return root;
 }
 
 void searchGatorID(gatorInfo* root, int gatorID, gatorInfo* parent){
 	
     if (root == NULL){
-        cout << "unsuccessful\n";
+        cout << "unsuccessful🙃\n";
         return;
     }
  
@@ -441,25 +441,30 @@ int findLevel(gatorInfo* root)
 
 
 
-void removeNthInorder(gatorInfo* root,int n){
+gatorInfo* removeNthInorder(gatorInfo* root,int n,gatorInfo* temp){
  static int count = 0;
     if (root == NULL)
-        return;
+        return root;
  
     if (count <= n) {
  
         /* first recur on left child */
         
         count++;
- 
+				//deleteGatorID works!!!😊
         // when count = n then print element
-        if (count == n)
-						cout<<root->gatorName<<"<--\n";
+        if (count == n){
+						cout<<root->gatorName<<" <-- is abou to be deleted\n";
+						root = deleteGatorID(root, temp->gatorID);
+						return root;
+				}
             
  
         /* now recur on right child */
-        removeNthInorder(root->right, n);removeNthInorder(root->left, n);
+        removeNthInorder(root, n,temp->left);
+				removeNthInorder(root, n,temp->left);
     }
+		return root;
 }
 // void removeNthInorder(gatorInfo* root,int n){
 // 	gatorInfo *current, *pre;
@@ -618,7 +623,7 @@ int main()
 					val = searchGatorName(root,searchThis);
 
 					if(val == 0){
-						cout<<"unsuccessful\n";
+						cout<<"unsuccessful🙃\n";
 					}
 					
 				}
@@ -634,7 +639,9 @@ int main()
 			if(comand == "removeInorder"){
 				int num =0 ;
 				cin>>num;
-				removeNthInorder(root,num);
+				gatorInfo* temp = new class gatorInfo;
+				temp = root;
+				root = removeNthInorder(root,num,temp);
 			}
 			if(comand == "printInorder"){
 				printInorder(root);
