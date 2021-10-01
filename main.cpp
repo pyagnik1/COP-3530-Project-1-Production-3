@@ -451,18 +451,16 @@ gatorInfo* removeNthInorder(gatorInfo* root,int n,gatorInfo* temp){
         /* first recur on left child */
         
         count++;
-				//deleteGatorID works!!!😊
+ 
         // when count = n then print element
         if (count == n){
-						cout<<root->gatorName<<" <-- is abou to be deleted\n";
+						cout<<temp->gatorName<<"<--\n";
 						root = deleteGatorID(root, temp->gatorID);
-						return root;
+            return root;
 				}
-            
  
         /* now recur on right child */
-        removeNthInorder(root, n,temp->left);
-				removeNthInorder(root, n,temp->left);
+        removeNthInorder(root, n,temp->right);removeNthInorder(root, n,temp->left);
     }
 		return root;
 }
