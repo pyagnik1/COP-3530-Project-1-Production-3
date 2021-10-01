@@ -1,9 +1,13 @@
-8
-insert "Evan" 44985771
-insert "Earl" 31834874
-insert "Erica" 21456789
+12
+insert "Brandon" 45674567
+insert "Brian" 35455565
+insert "Briana" 87878787
+insert "Bella" 95462138
 print2D
-printLevelCount
-insert "Enrique" 17891824
+printInorder
+remove 45674567
 print2D
-printLevelCount
+printInorder
+removeInorder 2
+print2D
+printInorder

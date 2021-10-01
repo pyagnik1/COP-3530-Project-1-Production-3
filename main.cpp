@@ -15,11 +15,12 @@ class gatorInfo
 };
  
 
-int height(gatorInfo *N)
+int height(gatorInfo *root)
 {
-    if (N == NULL)
+    if (root == NULL){
         return 0;
-    return N->height;
+		}
+    return root->height;
 }
  
 
@@ -104,11 +105,12 @@ gatorInfo *leftRotate(gatorInfo *root)
 }
  
 
-int getBalance(gatorInfo *N)
+int getBalance(gatorInfo *root)
 {
-    if (N == NULL)
+    if (root == NULL){
         return 0;
-    return height(N->left) - height(N->right);
+		}
+    return height(root->left) - height(root->right);
 }
 
 gatorInfo* balanceTree(gatorInfo* root,int gatorID,int balance){
@@ -197,10 +199,12 @@ gatorInfo* insertGatorInfo(gatorInfo* root, string gatorName,int gatorID)
 {
     
     if (root == NULL){
+			cout<<"successful\n";
         return(newGatorInfo(gatorName,gatorID));
 		}
 		if(gatorID == root->gatorID){ 
 			// Equal gatorIDs are not allowed in BST
+			cout<<"successful\n";
         return root;
 		}
 				/*
@@ -304,49 +308,52 @@ gatorInfo* minValueNode(gatorInfo* node)
 
 gatorInfo* deleteGatorID(gatorInfo* root, int gatorID)
 {
-    if (root == NULL)
+      if (root == NULL)
         return root;
  
-   
-    if (gatorID < root->gatorID){
+    // If the key to be deleted is
+    // smaller than the root's
+    // key, then it lies in left subtree
+    if (gatorID < root->gatorID)
         root->left = deleteGatorID(root->left, gatorID);
-		}
  
- 
-     if (gatorID > root->gatorID){
+    // If the key to be deleted is
+    // greater than the root's
+    // key, then it lies in right subtree
+    else if (gatorID > root->gatorID)
         root->right = deleteGatorID(root->right, gatorID);
-		 }
  
-  
+    // if key is same as root's key, then This is the node
+    // to be deleted
     else {
         // node has no child
-        if (root->left==NULL and root->right==NULL){
+        if (root->left==NULL and root->right==NULL)
             return NULL;
-				}
        
         // node with only one child or no child
-         if (root->left == NULL) {
+        else if (root->left == NULL) {
             gatorInfo* temp = root->right;
             free(root);
             return temp;
         }
-         if (root->right == NULL) {
+        else if (root->right == NULL) {
             gatorInfo* temp = root->left;
             free(root);
             return temp;
         }
  
-      
+        // node with two children: Get the inorder successor
+        // (smallest in the right subtree)
         gatorInfo* temp = minValueNode(root->right);
  
-        root = temp;
+        // Copy the inorder successor's content to this node
+        root->gatorID = temp->gatorID;
+				root->gatorName = temp->gatorName;
  
-    
+        // Delete the inorder successor
         root->right = deleteGatorID(root->right, temp->gatorID);
     }
-		int treeBalance = getBalance(root);
-		root->height = 1 + max(height(root->left),height(root->right));
-		balanceTree( root, gatorID, treeBalance);
+		cout<<"successful\n";
     return root;
 }
 
@@ -435,27 +442,69 @@ int findLevel(gatorInfo* root)
 
 
 void removeNthInorder(gatorInfo* root,int n){
-     static int count = 0;
-    if (root == NULL){
-        return ;
-		}
+ static int count = 0;
+    if (root == NULL)
+        return;
  
     if (count <= n) {
  
+        /* first recur on left child */
         
-        removeNthInorder(root->left, n);
         count++;
  
-       
-        if (count == n){
-           root = deleteGatorID( root, root->gatorID);
-					 return ;
-				}
+        // when count = n then print element
+        if (count == n)
+						cout<<root->gatorName<<"<--\n";
+            
  
-        
-        removeNthInorder(root->right, n);
+        /* now recur on right child */
+        removeNthInorder(root->right, n);removeNthInorder(root->left, n);
     }
 }
+// void removeNthInorder(gatorInfo* root,int n){
+// 	gatorInfo *current, *pre;
+
+// 	int count = 0;
+ 
+//     if (root == NULL)
+//         return ;
+ 
+//     while (root != NULL && count < n) {
+// 				count++;
+//         if (current->left == NULL) {
+//             cout<<current->gatorName<<"\n";
+//             current = current->right;
+//         }
+//         else {
+ 
+//             /* Find the inorder predecessor of current */
+//             pre = current->left;
+//             while (pre->right != NULL
+//                    && pre->right != current)
+//                 pre = pre->right;
+ 
+//             /* Make current as the right child of its
+//                inorder predecessor */
+//             if (pre->right == NULL) {
+//                 pre->right = current;
+//                 current = current->left;
+//             }
+ 
+//             /* Revert the changes made in the 'if' part to
+//                restore the original tree i.e., fix the right
+//                child of predecessor */
+//             else {
+//                 pre->right = NULL;
+// 								cout<<current->gatorName<<"\n";
+                
+//                 current = current->right;
+//             } /* End of if condition pre->right == NULL */
+//         } /* End of if condition current->left == NULL*/
+//     } /* End of while */
+
+	
+// }
+
 
 bool isNumber(const string& str)
 {
@@ -541,7 +590,9 @@ int main()
 			if(comand == "remove"){
 				int gatorID;
 				cin>>gatorID;
+				
 				root = deleteGatorID(root, gatorID);
+				
 			}
 
 			if(comand == "search"){
