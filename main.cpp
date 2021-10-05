@@ -194,13 +194,13 @@ gatorInfo *insertGatorInfo(gatorInfo *root, string gatorName, int gatorID)
 
 	if (root == NULL)
 	{
-		cout << "successful😊\n";
+		cout << "successful\n";
 		return (newGatorInfo(gatorName, gatorID));
 	}
 	if (gatorID == root->gatorID)
 	{
 		// Equal gatorIDs are not allowed in BST
-		cout << "unsuccessful😊\n";
+		cout << "unsuccessful\n";
 		return root;
 	}
 	/*
@@ -504,7 +504,7 @@ gatorInfo *deleteGatorID(gatorInfo *root, int gatorID)
 			
 		*/
 	}
-	cout << "successful😊\n";
+	cout << "successful\n";
 	return root;
 }
 
@@ -513,7 +513,7 @@ void searchGatorID(gatorInfo *root, int gatorID, gatorInfo *parent)
 
 	if (root == NULL)
 	{
-		cout << "unsuccessful🙃\n";
+		cout << "unsuccessful\n";
 		return;
 	}
 
@@ -551,14 +551,22 @@ void searchGatorID(gatorInfo *root, int gatorID, gatorInfo *parent)
 
 void printInorder(gatorInfo *root)
 {
-	 if (root != NULL){
-        
-    
-      printInorder(root->left);
-        
-      cout << root->gatorName<<", ";
-      printInorder(root->right);
-    }
+	if(root != NULL)
+    {
+        if(root->left) 
+        {
+            printInorder(root->left);
+            cout << ", "; 
+        }
+
+        cout << root->gatorName;
+
+        if(root->right)
+        {
+            cout << ", "; 
+            printInorder(root->right);
+        }
+   }	
 }
 
 void printPreorder(gatorInfo *root)
@@ -573,7 +581,7 @@ void printPreorder(gatorInfo *root)
 		printPreorder(root->left);
 		if (root->left && root->right)
 		{
-			cout << ",";
+			cout << ", ";
 		}
 		printPreorder(root->right);
 	}
@@ -586,11 +594,13 @@ bool printPostorder(gatorInfo *root)
 	{
 		return false;
 	}
-	if (printPostorder(root->left))
+	if (printPostorder(root->left)){
 		cout << ", ";
-	if (printPostorder(root->right))
+	}
+	if (printPostorder(root->right)){
 		cout << ", ";
-	(cout << root->gatorName);
+	}
+	cout << root->gatorName;
 	return true;
 }
 
@@ -636,31 +646,39 @@ gatorInfo *removeNthInorder(gatorInfo *root, int n, gatorInfo *temp)
 	if (count <= n)
 	{
 
-		
-
 		count++;
 
-		
 		if (count == n)
 		{
 			//cout << temp->gatorName << "<--\n";
+
 			root = deleteGatorID(root, temp->gatorID);
+
 			return root;
+
 		}
 
 		//To find the Nth node in the tree, I first traverse the left subtree and then travel the right subtree
+
 		removeNthInorder(root, n, temp->right);
+
 		removeNthInorder(root, n, temp->left);
+
 	}
+
 	return root;
+
 }
 
 bool isNumber(const string &str)
 {
 	for (char const &c : str)
 	{
+
 		if (std::isdigit(c) == 0)
+		{
 			return false;
+		}
 	}
 	return true;
 }
@@ -729,7 +747,7 @@ int main()
 
 				if (val == 0)
 				{
-					cout << "unsuccessful🙃\n";
+					cout << "unsuccessful\n";
 				}
 			}
 		}
